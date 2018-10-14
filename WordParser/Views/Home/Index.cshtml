@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+@using (Html.BeginForm("Parse",
+                        "Home",
+                        FormMethod.Post,
+                        new { enctype = "multipart/form-data" }))
+{
+    <label>Dosya Seçiniz:</label>
+    <input type="file" name="file" id="file" /><br><br>
+    <input type="submit" value="Kaydet" />
+    <br><br>
+    @ViewBag.Message
+}
