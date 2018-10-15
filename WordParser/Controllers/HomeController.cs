@@ -24,17 +24,21 @@ namespace WordParser.Controllers
             Application application = new Application();
             Document document = null;
             Style style = null;
-            string paragraphName = "",paragraphText = "";
-            EFDBContext context = new EFDBContext();
-            Models.Document d = new WordParser.Models.Document { Name = file.FileName };
-            context.Documents.Add(d);
+            bool first = true, next = true;
+            string paragraphText = "", paragraphName = "", paragraphContent = "";
             try
             {
+                EFDBContext context = new EFDBContext();
+                Models.Document d = new Models.Document { Name = file.FileName };
+                context.Documents.Add(d);
                 document = application.Documents.Open(path);
                 foreach (Paragraph paragraph in document.Paragraphs)
                 {
-                    style = paragraph.get_Style();
-                    if (
+                    paragraphText = paragraph.Range.Text.Trim();
+                    if (paragraphText != "")
+                    {
+                        style = paragraph.get_Style();
+                        if (
                         style.NameLocal == "Heading 1" ||
                         style.NameLocal == "Heading 2" ||
                         style.NameLocal == "Heading 3" ||
@@ -44,10 +48,31 @@ namespace WordParser.Controllers
                         style.NameLocal == "Heading 7" ||
                         style.NameLocal == "Heading 8" ||
                         style.NameLocal == "Heading 9")
+                        {
+                            next = false;
+                            paragraphName = paragraphText;
+                        }
+                        else if (!next)
+                        {
+                            paragraphContent += paragraphText;
+                        }
+                    }
+                    else
                     {
-                        paragraphName = paragraph.Range.Text.Trim();
+                        paragraphContent += paragraph.Range.Text.Trim();
+                    }
+                    if (paragraphName != "" && paragraphContent != "")
+                    {
+                        Models.Paragraph p = new Models.Paragraph { Name = paragraphName, Content = paragraphContent, DocumentId = d.Id };
+                        context.Paragraphs.Add(p);
+                    }
+                    else if (paragraphName == "" && paragraphContent != "")
+                    {
+                        Models.Paragraph p = new Models.Paragraph { Name = "Bilinmeyen Başlık", Content = paragraphContent, DocumentId = d.Id };
+                        context.Paragraphs.Add(p);
                     }
                 }
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
