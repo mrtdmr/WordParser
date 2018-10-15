@@ -1,17 +1,10 @@
-﻿
+﻿@model List<WordParser.Models.Document>
 @{
     ViewBag.Title = "Index";
 }
 
 <h2>Index</h2>
-@using (Html.BeginForm("Parse",
-                        "Home",
-                        FormMethod.Post,
-                        new { enctype = "multipart/form-data" }))
+@foreach (var item in Model)
 {
-    <label>Dosya Seçiniz:</label>
-    <input type="file" name="file" id="file" /><br><br>
-    <input type="submit" value="Kaydet" />
-    <br><br>
-    @ViewBag.Message
+    <h1>@item.Name</h1>
 }
