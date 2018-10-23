@@ -11,6 +11,7 @@ namespace WordParser.Models.EntityFramework
     {
         public DbSet<Document> Documents { get; set; }
         public DbSet<Paragraph> Paragraphs { get; set; }
+        public DbSet<DocumentType> DocumentTypes { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();

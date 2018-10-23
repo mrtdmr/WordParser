@@ -14,14 +14,18 @@ namespace WordParser.Controllers
         // GET: Document
         public ActionResult Index(int documentId, int paragraphId)
         {
+            Models.DocumentViewModel documentViewModel = new Models.DocumentViewModel();
             Models.Document document = context.Documents.Find(documentId);
-            if (paragraphId != 0)
+            if (document != null)
             {
-                Models.Paragraph paragraph = document.Paragraphs.ToList().Find(p => p.Id == paragraphId);
-                ViewBag.Content = paragraph.Content;
-                ViewBag.ParagraphName = paragraph.Name;
+                documentViewModel.Document = document;
+                if (paragraphId != 0)
+                {
+                    documentViewModel.Paragraph = document.Paragraphs.ToList().Find(p => p.Id == paragraphId);
+                }
             }
-            return View(document);
+
+            return View(documentViewModel);
         }
     }
 }

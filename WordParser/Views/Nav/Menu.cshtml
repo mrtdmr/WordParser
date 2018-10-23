@@ -1,0 +1,9 @@
+﻿@model IEnumerable<WordParser.Models.Paragraph>
+<div class="list-group">
+    @foreach (var paragraph in Model)
+    {
+        <a href="@Url.RouteUrl("", new { controller = "Home", action = "Detail", documentId=paragraph.DocumentId,paragraphId = paragraph.Id })" class="@(paragraph.Id == ViewBag.SelectedParagraphId ? "list-group-item active" : "list-group-item")">
+                @paragraph.Name
+            </a>
+    }
+</div>

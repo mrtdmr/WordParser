@@ -12,6 +12,8 @@ namespace WordParser.Models
         [Required(ErrorMessage ="Döküman adı giriniz.")]
         public string Name { get; set; }
         public string Path { get; set; }
+        public int DocumentTypeId { get; set; }
+        public virtual DocumentType DocumentType { get; set; }
         public virtual ICollection<Paragraph> Paragraphs { get; set; }
     }
 }

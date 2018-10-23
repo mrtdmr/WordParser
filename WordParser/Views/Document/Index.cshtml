@@ -1,26 +1,25 @@
-﻿@model WordParser.Models.Document
+﻿@model WordParser.Models.DocumentViewModel
 @{
     ViewBag.Title = "Index";
 }
 
-@if (Model != null)
+@if (Model.Document != null)
 {
-    <div class="panel">
-        <div class="panel-heading"><b>@Model.Name.ToUpper()</b></div>
-        <div class="panel-body">
-            <div class=" col-lg-3">
-                <div class="panel pull-left pre-scrollable">
-                    @foreach (var paragraph in Model.Paragraphs)
-                    {
-                        <p>@Html.ActionLink(paragraph.Name, "Index", "Document", new { documentId = Model.Id, paragraphId = paragraph.Id }, null)</p>
-                    }
-                </div>
-            </div>
-            <div class="col-lg-8">
-                <div class="panel-heading"><h4>@ViewBag.ParagraphName </h4> </div>
-                <div class="pull-left">
-                    @(new HtmlString(ViewBag.Content))
-                </div>
+    <div class="row panel">
+        <div id="paragraphs" class="col-xs-3 pre-scrollable">
+            @Html.Action("Menu", "Nav")
+        </div>
+        <div class="col-xs-8">
+            <div class="panel-group">
+                @if (Model.Paragraph != null)
+                {
+                    <div class="panel-heading">
+                        <b>@Model.Paragraph.Name</b>
+                    </div>
+                    <div class="panel-body">
+                        @(new HtmlString(Model.Paragraph?.Content))
+                    </div>
+                }
             </div>
         </div>
     </div>
