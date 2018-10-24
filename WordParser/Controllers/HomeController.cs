@@ -42,7 +42,7 @@ namespace WordParser.Controllers
         }
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public RedirectToRouteResult Add(HttpPostedFileBase file, Models.Document d)
+        public ViewResult Add(HttpPostedFileBase file, Models.Document d)
         {
             if (ModelState.IsValid)
             {
@@ -105,26 +105,53 @@ namespace WordParser.Controllers
 
                         }
                     }
+                    ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+                    return View("Index", context.Documents.Include("DocumentType").ToList());
                 }
                 else
                 {
                     ViewBag.FileError = "Dosya Seçiniz";
+                    ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+                    return View();
                 }
             }
-            ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
-            return RedirectToAction("Index", "Home");
+            else
+            {
+                ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+                return View();
+            }
+            
         }
         public ViewResult Update(int documentId)
         {
             Models.Document document = context.Documents.Find(documentId);
             if (document != null)
             {
+                ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", document.DocumentTypeId);
                 return View(document);
             }
             else
             {
                 return View("Index", context.Documents.ToList());
             }
+        }
+        [HttpPost]
+        public ViewResult Update(Models.Document d)
+        {
+            if (ModelState.IsValid)
+            {
+                Models.Document document = context.Documents.Find(d.Id);
+                if (document != null)
+                {
+                    document.Name = d.Name;
+                    document.DocumentTypeId = d.DocumentTypeId;
+                    context.SaveChanges();
+                    ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+                    return View(document);
+                }
+            }
+            ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+            return View();
         }
         public ViewResult Delete(int documentId)
         {
@@ -146,6 +173,12 @@ namespace WordParser.Controllers
             {
                 context.Documents.Remove(document);
                 context.SaveChanges();
+                string path = Path.Combine(Server.MapPath("~/files"),
+                                       Path.GetFileName(document.Path));
+                if (System.IO.File.Exists(path))
+                {
+                    System.IO.File.Delete(path);
+                }
             }
             return RedirectToAction("Index", "Home");
         }
