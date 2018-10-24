@@ -67,15 +67,15 @@ namespace WordParser.Controllers
                             if (paragraphText != "")
                             {
                                 if (
-                                    paragraph.StyleName == "Heading1" ||
-                                    paragraph.StyleName == "Heading2" ||
-                                    paragraph.StyleName == "Heading3" ||
-                                    paragraph.StyleName == "Heading4" ||
-                                    paragraph.StyleName == "Heading5" ||
-                                    paragraph.StyleName == "Heading6" ||
-                                    paragraph.StyleName == "Heading7" ||
-                                    paragraph.StyleName == "Heading8" ||
-                                    paragraph.StyleName == "Heading9")
+                                    paragraph.StyleName == "Heading1" || paragraph.StyleName == "Balk1" ||
+                                    paragraph.StyleName == "Heading2" || paragraph.StyleName == "Balk2" ||
+                                    paragraph.StyleName == "Heading3" || paragraph.StyleName == "Balk3" ||
+                                    paragraph.StyleName == "Heading4" || paragraph.StyleName == "Balk4" ||
+                                    paragraph.StyleName == "Heading5" || paragraph.StyleName == "Balk5" ||
+                                    paragraph.StyleName == "Heading6" || paragraph.StyleName == "Balk6" ||
+                                    paragraph.StyleName == "Heading7" || paragraph.StyleName == "Balk7" ||
+                                    paragraph.StyleName == "Heading8" || paragraph.StyleName == "Balk8" ||
+                                    paragraph.StyleName == "Heading9" || paragraph.StyleName == "Balk9")
                                 {
                                     if (paragraphName != "" && paragraphContent != "")
                                     {
