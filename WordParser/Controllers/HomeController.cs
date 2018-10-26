@@ -100,10 +100,10 @@ namespace WordParser.Controllers
                             paragraphContent = "";
                         }
                         context.SaveChanges();
-                        foreach (Table table in section.Body.Tables)
-                        {
+                        //foreach (Table table in section.Body.Tables)
+                        //{
 
-                        }
+                        //}
                     }
                     ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
                     return View("Index", context.Documents.Include("DocumentType").ToList());
@@ -181,6 +181,10 @@ namespace WordParser.Controllers
                 }
             }
             return RedirectToAction("Index", "Home");
+        }
+        public ViewResult Search(string searchString)
+        {
+            return View();
         }
         static void ExtractTextFromTables(Table table, StreamWriter sw)
         {

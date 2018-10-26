@@ -5,7 +5,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <div class="row">
-            @using (@Html.BeginForm("Ara", "Word", FormMethod.Post, new { @class = "navbar-form navbar-left", role = "search" }))
+            @using (@Html.BeginForm("Search", "Home", FormMethod.Post, new { @class = "navbar-form navbar-left", role = "search" }))
             {
                 <div class="form-group">
                     @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Ara..." })
