@@ -8,28 +8,28 @@ using System.Linq;
 using Spire.Doc;
 using Spire.Doc.Documents;
 using System.Text;
+using WordParser.Infrastructure;
 
 namespace WordParser.Controllers
 {
     public class HomeController : Controller
     {
         // GET: Home
-        EFDBContext context = new EFDBContext();
         public ViewResult Index()
         {
             //ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name");
-            return View(context.Documents.ToList());
+            return View(Repository.DocumentRepository().GetAll().ToList());
         }
         public ViewResult Detail(int documentId, int paragraphId)
         {
             Models.DocumentViewModel documentViewModel = new Models.DocumentViewModel();
-            Models.Document document = context.Documents.Find(documentId);
+            Models.Document document = Repository.DocumentRepository().GetById(documentId);
             if (document != null)
             {
                 documentViewModel.Document = document;
                 if (paragraphId != 0)
                 {
-                    documentViewModel.Paragraph = document.Paragraphs.ToList().Find(p => p.Id == paragraphId);
+                    documentViewModel.Paragraph = Repository.ParagraphRepository().GetById(paragraphId);
                 }
             }
 
@@ -37,7 +37,7 @@ namespace WordParser.Controllers
         }
         public ViewResult Add()
         {
-            ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+            ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
             return View();
         }
         [ValidateAntiForgeryToken]
@@ -53,7 +53,7 @@ namespace WordParser.Controllers
                                        Path.GetFileName(file.FileName));
                     file.SaveAs(path);
                     d.Path = file.FileName;
-                    context.Documents.Add(d);
+                    Repository.DocumentRepository().Add(d);
                     Document document = new Document();
                     document.LoadFromFile(path);
                     string paragraphText = "", paragraphName = "", paragraphContent = "";
@@ -80,7 +80,7 @@ namespace WordParser.Controllers
                                     if (paragraphName != "" && paragraphContent != "")
                                     {
                                         Models.Paragraph p = new Models.Paragraph { Name = paragraphName, Content = paragraphContent, DocumentId = d.Id };
-                                        context.Paragraphs.Add(p);
+                                        Repository.ParagraphRepository().Add(p);
                                         paragraphName = "";
                                         paragraphContent = "";
                                     }
@@ -95,44 +95,43 @@ namespace WordParser.Controllers
                         if (paragraphName != "" && paragraphContent != "")
                         {
                             Models.Paragraph p = new Models.Paragraph { Name = paragraphName, Content = paragraphContent, DocumentId = d.Id };
-                            context.Paragraphs.Add(p);
+                            Repository.ParagraphRepository().Add(p);
                             paragraphName = "";
                             paragraphContent = "";
                         }
-                        context.SaveChanges();
                         //foreach (Table table in section.Body.Tables)
                         //{
 
                         //}
                     }
-                    ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
-                    return View("Index", context.Documents.Include("DocumentType").ToList());
+                    ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
+                    return View("Index", Repository.DocumentRepository().GetAll("DocumentType").ToList());
                 }
                 else
                 {
                     ViewBag.FileError = "Dosya Seçiniz";
-                    ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+                    ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
                     return View();
                 }
             }
             else
             {
-                ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+                ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
                 return View();
             }
             
         }
         public ViewResult Update(int documentId)
         {
-            Models.Document document = context.Documents.Find(documentId);
+            Models.Document document = Repository.DocumentRepository().GetById(documentId);
             if (document != null)
             {
-                ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", document.DocumentTypeId);
+                ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", document.DocumentTypeId);
                 return View(document);
             }
             else
             {
-                return View("Index", context.Documents.ToList());
+                return View("Index", Repository.DocumentRepository().GetAll().ToList());
             }
         }
         [HttpPost]
@@ -140,39 +139,38 @@ namespace WordParser.Controllers
         {
             if (ModelState.IsValid)
             {
-                Models.Document document = context.Documents.Find(d.Id);
+                Models.Document document = Repository.DocumentRepository().GetById(d.Id);
                 if (document != null)
                 {
                     document.Name = d.Name;
                     document.DocumentTypeId = d.DocumentTypeId;
-                    context.SaveChanges();
-                    ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+                    Repository.DocumentRepository().Update(document);
+                    ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
                     return View(document);
                 }
             }
-            ViewBag.DocumentTypeId = new SelectList(context.DocumentTypes, "Id", "Name", "");
+            ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
             return View();
         }
         public ViewResult Delete(int documentId)
         {
-            Models.Document document = context.Documents.Find(documentId);
+            Models.Document document = Repository.DocumentRepository().GetById(documentId);
             if (document != null)
             {
                 return View(document);
             }
             else
             {
-                return View("Index", context.Documents.ToList());
+                return View("Index", Repository.DocumentRepository().GetAll().ToList());
             }
         }
         [HttpPost, ActionName("Delete")]
         public RedirectToRouteResult DeleteConfirmed(int documentId)
         {
-            Models.Document document = context.Documents.Find(documentId);
+            Models.Document document = Repository.DocumentRepository().GetById(documentId);
             if (document != null)
             {
-                context.Documents.Remove(document);
-                context.SaveChanges();
+                Repository.DocumentRepository().Delete(documentId);
                 string path = Path.Combine(Server.MapPath("~/files"),
                                        Path.GetFileName(document.Path));
                 if (System.IO.File.Exists(path))
@@ -184,7 +182,11 @@ namespace WordParser.Controllers
         }
         public ViewResult Search(string searchString)
         {
-            return View();
+            Models.SearchViewModel searchViewModel = new Models.SearchViewModel();
+            searchViewModel.Documents = Repository.DocumentRepository().GetAll().Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())).ToList();
+            searchViewModel.Paragraphs = Repository.ParagraphRepository().GetAll().Where(p=>p.Name.Replace("'","").ToUpper().Contains(searchString.ToUpper()) || p.Content.Replace("'", "").ToUpper().Contains(searchString.ToUpper())).ToList();
+            searchViewModel.SearchString = searchString;
+            return View("Search", searchViewModel);
         }
         static void ExtractTextFromTables(Table table, StreamWriter sw)
         {
