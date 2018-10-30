@@ -99,10 +99,39 @@ namespace WordParser.Controllers
                             paragraphName = "";
                             paragraphContent = "";
                         }
-                        //foreach (Table table in section.Body.Tables)
-                        //{
+                        if (section.Body.Tables.Count > 0)
+                        {
+                            string tableText = "<table style='table-layout: fixed; width: 100%'>";
+                            int tableIndex = 1;
+                            foreach (Table table in section.Body.Tables)
+                            {
+                                foreach (TableRow row in table.Rows)
+                                {
 
-                        //}
+                                    if (row.GetRowIndex() == 0)
+                                    {
+                                        tableText += "<tr style='font-weight: bold;'>";
+                                    }
+                                    else
+                                    {
+                                        tableText += "<tr>";
+                                    }
+                                    foreach (TableCell cell in row.Cells)
+                                    {
+                                        foreach (Paragraph paragraph in cell.Paragraphs)
+                                        {
+                                            tableText += "<td style='border: 1px solid black; word-wrap: break-word'>" + paragraph.Text + "</td>";
+                                        }
+                                    }
+                                    tableText += "</tr>";
+                                }
+                                tableText += "</table>";
+                                Models.Paragraph p = new Models.Paragraph { Name = table.Title?.ToString() == null || table.Title?.ToString() == "" ? "Tablo " + tableIndex : "Tablo:" + table.Title, Content = tableText, DocumentId = d.Id };
+                                Repository.ParagraphRepository().Add(p);
+                                tableText = "<table>";
+                                tableIndex++;
+                            }
+                        }
                     }
                     ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
                     return View("Index", Repository.DocumentRepository().GetAll("DocumentType").ToList());
@@ -119,7 +148,7 @@ namespace WordParser.Controllers
                 ViewBag.DocumentTypeId = new SelectList(Repository.DocumentTypeRepository().GetAll(), "Id", "Name", "");
                 return View();
             }
-            
+
         }
         public ViewResult Update(int documentId)
         {
@@ -182,11 +211,19 @@ namespace WordParser.Controllers
         }
         public ViewResult Search(string searchString)
         {
-            Models.SearchViewModel searchViewModel = new Models.SearchViewModel();
-            searchViewModel.Documents = Repository.DocumentRepository().GetAll().Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())).ToList();
-            searchViewModel.Paragraphs = Repository.ParagraphRepository().GetAll().Where(p=>p.Name.Replace("'","").ToUpper().Contains(searchString.ToUpper()) || p.Content.Replace("'", "").ToUpper().Contains(searchString.ToUpper())).ToList();
-            searchViewModel.SearchString = searchString;
-            return View("Search", searchViewModel);
+            if (searchString.Trim() != "")
+            {
+                Models.SearchViewModel searchViewModel = new Models.SearchViewModel();
+                searchViewModel.Documents = Repository.DocumentRepository().GetAll().Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())).ToList();
+                searchViewModel.Paragraphs = Repository.ParagraphRepository().GetAll().Where(p => p.Name.Replace("'", "").ToUpper().Contains(searchString.ToUpper()) || p.Content.Replace("'", "").ToUpper().Contains(searchString.ToUpper())).ToList();
+                searchViewModel.SearchString = searchString;
+                return View("Search", searchViewModel);
+            }
+            else
+            {
+                ViewBag.AramaHata = "Aranacak Kelimeyi Giriniz...";
+                return View("Index", Repository.DocumentRepository().GetAll().ToList());
+            }
         }
         static void ExtractTextFromTables(Table table, StreamWriter sw)
         {
