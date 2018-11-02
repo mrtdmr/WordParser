@@ -1,6 +1,6 @@
 ﻿@model WordParser.Models.Document
 @{
-    ViewBag.Title = "Döküman Ekle";
+    ViewBag.Title = "Doküman Ekle";
 }
 
 @using (Html.BeginForm("Add",
@@ -10,12 +10,12 @@
 {
     @Html.AntiForgeryToken()
     <div class="panel panel-default">
-        <div class="panel-heading"><h3>Döküman Ekle</h3></div>
+        <div class="panel-heading"><h3>Doküman Ekle</h3></div>
         <div class="panel-body">
             <div class="row">
                 <div class="form-group">
                     <div class="col-sm-2">
-                        Döküman Seçiniz:
+                        Doküman Seçiniz:
                     </div>
                     <div class="col-sm-5">
                         <input type="file" name="file" id="file" /><br />@ViewBag.FileError
@@ -25,7 +25,7 @@
             <div class="row">
                 <div class="form-group">
                     <div class="col-sm-2">
-                        Döküman Tipi
+                        Doküman Tipi
                     </div>
                     <div class="col-sm-3">
                         @Html.DropDownListFor(model => model.DocumentTypeId, (SelectList)ViewBag.DocumentTypeId, "Dosya türü seçiniz", new { @class = "form-control" })
@@ -39,7 +39,7 @@
             <div class="row">
                 <div class="form-group">
                     <div class="col-sm-2">
-                        Döküman Adı
+                        Doküman Adı
                     </div>
                     <div class="col-sm-3">
                         @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
