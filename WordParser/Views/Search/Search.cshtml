@@ -1,0 +1,21 @@
+﻿@model WordParser.Models.SearchViewModel
+@using (@Html.BeginForm("Index", "SearchResult", FormMethod.Post, new { @class = "navbar-form navbar-left", role = "search" }))
+{
+    <div class="row">
+        <div class="form-group">
+            <div class="col-sm-5">
+                @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Ara..." })
+            </div>
+            <div class="col-sm-3">
+                @Html.DropDownListFor(model => model.DocumentTypeId, (SelectList)ViewBag.DocumentTypeId, "Dosya türü seçiniz", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default">
+                <span class="glyphicon glyphicon-search"></span>  Ara
+            </button>
+        </div>
+        @ViewBag.AramaHata
+    </div>
+}
+

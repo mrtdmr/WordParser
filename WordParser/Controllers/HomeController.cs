@@ -209,22 +209,6 @@ namespace WordParser.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        public ViewResult Search(string searchString)
-        {
-            if (searchString.Trim() != "")
-            {
-                Models.SearchViewModel searchViewModel = new Models.SearchViewModel();
-                searchViewModel.Documents = Repository.DocumentRepository().GetAll().Where(d => d.Name.ToUpper().Contains(searchString.ToUpper())).ToList();
-                searchViewModel.Paragraphs = Repository.ParagraphRepository().GetAll().Where(p => p.Name.Replace("'", "").ToUpper().Contains(searchString.ToUpper()) || p.Content.Replace("'", "").ToUpper().Contains(searchString.ToUpper())).ToList();
-                searchViewModel.SearchString = searchString;
-                return View("Search", searchViewModel);
-            }
-            else
-            {
-                ViewBag.AramaHata = "Aranacak Kelimeyi Giriniz...";
-                return View("Index", Repository.DocumentRepository().GetAll().ToList());
-            }
-        }
         static void ExtractTextFromTables(Table table, StreamWriter sw)
         {
             for (int i = 0; i < table.Rows.Count; i++)

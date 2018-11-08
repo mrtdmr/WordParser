@@ -5,9 +5,10 @@ using System.Web;
 
 namespace WordParser.Models
 {
-    public class SearchViewModel
+    public class SearchResultViewModel
     {
         public string SearchString { get; set; }
-        public int DocumentTypeId { get; set; }
+        public IEnumerable<Models.Document> Documents { get; set; }
+        public IEnumerable<Models.Paragraph> Paragraphs { get; set; }
     }
 }

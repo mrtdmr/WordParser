@@ -1,4 +1,4 @@
-﻿@model WordParser.Models.SearchViewModel
+﻿@model WordParser.Models.SearchResultViewModel
 @{
     ViewBag.Title = "Search";
 }
@@ -6,15 +6,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <div class="row">
-            @using (@Html.BeginForm("Search", "Home", FormMethod.Post, new { @class = "navbar-form navbar-left", role = "search" }))
-            {
-                <div class="form-group">
-                    @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Ara..." })
-                </div>
-                <button type="submit" class="btn btn-default">
-                    <span class="glyphicon glyphicon-search"></span>  Ara
-                </button>
-            }
+            @Html.Action("Search", "Search",new { selectedDocumentTypeId = ViewBag.selectedDocumentTypeId })
         </div>
         <h3>Arama Sonuçları</h3>
         <h5>Aranan Kelime: @Model.SearchString</h5>
